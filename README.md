@@ -110,7 +110,8 @@ If you cannot use Python or prefer manual control, you can use the **Registry He
 
 | Macro | Description |
 | :--- | :--- |
-| `map_init(Name, hash_fn, cmp_fn)` | Returns an empty map struct. Requires function pointers for hashing and comparing keys. |
+| `map_init(Name, hash_fn, cmp_fn)` | Returns an empty map struct with default load factor (0.75). |
+| `map_init_chk(Name, h, c, load)` | Returns an empty map with a custom load factor (0.1 to 0.95). |
 | `map_free(m)` | Frees the internal bucket array and zeroes the map structure. |
 | `map_clear(m)` | Clears all items (memset to 0) but keeps the allocated memory capacity. |
 | `map_size(m)` | Returns the number of active items (`size_t`). |
@@ -121,11 +122,22 @@ If you cannot use Python or prefer manual control, you can use the **Registry He
 | :--- | :--- |
 | `map_put(m, key, val)` | Inserts the key-value pair. If the key exists, updates the value. Returns `Z_OK` or `Z_ERR`. |
 | `map_get(m, key)` | Returns a **pointer** to the value associated with `key`, or `NULL` if not found. |
+| `map_contains(m, key)` | Returns `true` if the key exists in the map, otherwise `false`. |
 | `map_remove(m, key)` | Removes the item associated with `key`. Does nothing if the key is missing. |
 
-### Helper Functions
+### Iteration
 
-The library provides built-in hashing helpers you can wrap in your own functions:
+| Macro | Description |
+| :--- | :--- |
+| `map_iter_init(Name, m)` | Returns a `zmap_iter_Name` struct initialized to the start of the map. |
+| `map_iter_next(it, k, v)` | Advances the iterator. Returns `true` if a pair was retrieved, `false` at the end. |
+
+**Example:**
+```c
+zmap_iter_int it = map_iter_init(int, &my_map);
+zstr key; int val;
+while (map_iter_next(&it, &key, &val)) { ... }
+```
 
 | Function/Macro | Description |
 | :--- | :--- |
