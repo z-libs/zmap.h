@@ -207,7 +207,7 @@ static inline int map_resize_##Name(map_##Name *m, size_t new_cap) {            
 /* Inserts or updates a value. Returns Z_OK on success, Z_ERR on allocation failure. */                         \
 static inline int map_put_##Name(map_##Name *m, KeyT key, ValT val) {                                           \
     if (m->occupied >= m->threshold) {                                                                          \
-        size_t new_cap = m->capacity == 0 ? 16 : m->capacity * 2;                                               \
+        size_t new_cap = m->capacity == Z_GROWTH_FACTOR(m->capacity);                                           \
         if (map_resize_##Name(m, new_cap) != Z_OK) return Z_ERR;                                                \
     }                                                                                                           \
     uint32_t hash = m->hash_func(key);                                                                          \
