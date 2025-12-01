@@ -311,7 +311,7 @@ typedef enum
  * Name : The suffix for the generated functions (for example, Int -> vec_push_Int).
  *        Name must be one word only.
  */
-#define DEFINE_MAP_TYPE(KeyT, ValT, Name)                                                                       \
+#define Z_MAP_GENERATE_IMPL(KeyT, ValT, Name)                                                                   \
                                                                                                                 \
 /* The bucket struct holding individual entries. */                                                             \
 typedef struct                                                                                                  \
@@ -541,7 +541,7 @@ static inline void map_clear_##Name(map_##Name *m)                              
     Z_AUTOGEN_MAPS(X) \
     REGISTER_MAP_TYPES(X)
 
-Z_ALL_MAPS(DEFINE_MAP_TYPE)
+Z_ALL_MAPS(Z_MAP_GENERATE_IMPL)
 
 // Standard Init (Load Factor = 0.75).
 #define map_init(Name, h_func, c_func)    map_init_##Name(h_func, c_func)
