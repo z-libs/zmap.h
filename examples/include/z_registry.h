@@ -10,7 +10,5 @@
 
 /* Maps */
 #define Z_AUTOGEN_MAPS(X) \
-    X(int, float, IntFloat) \
-    X(char*, int, StrInt) \
 
 #endif // Z_REGISTRY_H

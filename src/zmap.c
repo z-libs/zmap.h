@@ -1,4 +1,3 @@
-
 #ifndef ZMAP_H
 #define ZMAP_H
 
@@ -31,7 +30,10 @@ namespace z_map
     class map_iterator
     {
     public:
-        // Strip const for trait lookup, but keep it for value_type if needed.
+        // Detect const-ness
+        static constexpr bool is_const = std::is_const<K>::value || std::is_const<V>::value;
+
+        // Strip const for trait lookup (we always look up the raw C type)
         using KeyT = typename std::remove_const<K>::type;
         using ValT = typename std::remove_const<V>::type;
         
@@ -42,8 +44,9 @@ namespace z_map
         using iterator_category = std::forward_iterator_tag;
         using value_type = CBucket;
         using difference_type = ptrdiff_t;
-        using pointer = CBucket*;
-        using reference = CBucket&;
+        
+        using reference = typename std::conditional<is_const, const CBucket&, CBucket&>::type;
+        using pointer   = typename std::conditional<is_const, const CBucket*, CBucket*>::type;
 
         map_iterator(CMap* m, size_t idx) : map_ptr(m), index(idx) 
         {
@@ -173,6 +176,11 @@ namespace z_map
         /* Iterators. */
         iterator begin() { return iterator(&inner, 0); }
         iterator end() { return iterator(&inner, inner.capacity); }
+        
+        const_iterator begin() const { return const_iterator((c_map*)&inner, 0); }
+        const_iterator end() const { return const_iterator((c_map*)&inner, inner.capacity); }
+        const_iterator cbegin() const { return begin(); }
+        const_iterator cend() const { return end(); }
     };
 }
 
@@ -232,13 +240,7 @@ typedef enum
 } zmap_state;
 
 
-/* * The generator macro.
- * Expands to a complete implementation of a dynamic array for type T.
- * KeyT : The key type (e.g., int, float, Point).
- * ValT : The value type.
- * Name : The suffix for the generated functions (for example, Int -> vec_push_Int).
- *        Name must be one word only.
- */
+/* * The generator macro. */
 #define Z_MAP_GENERATE_IMPL(KeyT, ValT, Name)                                                                   \
                                                                                                                 \
 /* The bucket struct holding individual entries. */                                                             \
