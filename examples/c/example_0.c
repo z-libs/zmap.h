@@ -1,7 +1,10 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "my_maps.h"
+#include "zmap.h"
+
+DEFINE_MAP_TYPE(char*, int,   StrInt)
+DEFINE_MAP_TYPE(int,   float, IntFloat)
 
 uint32_t hash_str(char *key)
 { 
