@@ -71,6 +71,7 @@
 #endif // Z_COMMON_BUNDLED
 /* ============================================================================ */
 
+
 #ifndef ZMAP_H
 #define ZMAP_H
 // [Bundled] "zcommon.h" is included inline in this same file
@@ -249,6 +250,7 @@ namespace z_map
         iterator begin() { return iterator(&inner, 0); }
         iterator end() { return iterator(&inner, inner.capacity); }
         
+        // Const Iterators.
         const_iterator begin() const { return const_iterator((c_map*)&inner, 0); }
         const_iterator end() const { return const_iterator((c_map*)&inner, inner.capacity); }
         const_iterator cbegin() const { return begin(); }
@@ -354,10 +356,10 @@ static inline void map_free_##Name(map_##Name *m)                               
 static inline map_##Name map_init_ext_##Name(uint32_t (*h)(KeyT), int (*c)(KeyT, KeyT), float load)             \
 {                                                                                                               \
     return (map_##Name){                                                                                        \
-        .hash_func = h,                                                                                         \
-        .cmp_func = c,                                                                                          \
+        .threshold = 0,                                                                                         \
         .load_factor = (load <= 0.1f || load > 0.95f) ? ZMAP_DEFAULT_LOAD : load,                               \
-        .threshold = 0                                                                                          \
+        .hash_func = h,                                                                                         \
+        .cmp_func = c                                                                                           \
     };                                                                                                          \
 }                                                                                                               \
                                                                                                                 \
