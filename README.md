@@ -2,52 +2,49 @@
 
 `zmap.h` provides generic hash maps (dictionaries) for C projects. It uses open addressing with linear probing for high performance and cache efficiency. Unlike typical C map implementations that force `void*` casting or string-only keys, `zmap.h` uses C11 `_Generic` selection to generate fully typed, type-safe implementations for your specific key-value pairs.
 
+It also includes a robust **C++11 wrapper**, allowing you to use it as a lightweight, drop-in map class (`z_map::map`) in mixed codebases while sharing the same underlying C implementation.
+
 ## Features
 
 * **Type Safety**: Compiler errors if you try to put a `float` key into an `int` map.
 * **Native Performance**: Open addressing with linear probing reduces pointer chasing and malloc overhead compared to chained hashmaps.
+* **C++ Support**: Includes a full C++ class wrapper with RAII, iterators, and STL-like API.
 * **Zero Boilerplate**: Use the **Z-Scanner** tool to automatically generate type registrations.
 * **Header Only**: No linking required.
 * **Memory Agnostic**: Supports custom allocators (Arenas, Pools, Debuggers).
 * **Zero Dependencies**: Only standard C headers used.
 
-## Quick Start (Automated)
+## Installation
 
-The easiest way to use `zmap.h` is with the **Z-Scanner** tool, which scans your code and handles the boilerplate for you.
+`zmap.h` works best when you use the provided scanner script to manage type registrations, though it can be used manually.
 
-### 1. Setup
-
-Add `zmap.h` and the `z-core` tools to your project:
-
+1.  Copy `zmap.h` (and `zcommon.h` if separated) to your project's include folder.
+2.  Add the `z-core` tools (optional but recommended).
 ```bash
-# Copy zmap.h to your root or include folder.
-git submodule add https://github.com/z-libs/z-core.git z-core
+git submodule add [https://github.com/z-libs/z-core.git](https://github.com/z-libs/z-core.git) z-core
 ```
 
-### 2. Write Code
+## Usage: C
 
-You don't need a separate registry file. Just define the types you need right where you use them (or in your own headers).
+For C projects, you define the map types you need using a macro that the scanner detects.
 
 ```c
 #include <stdio.h>
 #include <string.h>
 #include "zmap.h"
 
-// Define a custom struct if needed.
-typedef struct { int id; } Product;
-
 // Helper functions are required for hashing and comparing keys.
+// (You can write your own or use the provided macros).
 uint32_t hash_str(char *key)   { return ZMAP_HASH_STR(key); }
 int      cmp_str(char *a, char *b) { return strcmp(a, b); }
 
 // Request the map types you need.
 // Syntax: DEFINE_MAP_TYPE(KeyType, ValueType, ShortName).
 DEFINE_MAP_TYPE(char*, int, StrInt)
-DEFINE_MAP_TYPE(int, float, IntFloat)
 
 int main(void)
 {
-    // Initialize with helper functions.
+    // Initialize (Standard C style).
     map_StrInt scores = map_init(StrInt, hash_str, cmp_str);
 
     map_put(&scores, "Alice", 100);
@@ -60,22 +57,57 @@ int main(void)
         printf("Alice: %d\n", *score);
     }
     
+    // Cleanup.
     map_free(&scores);
     return 0;
 }
 ```
 
-### 3. Build
+## Usage: C++
 
-Run the scanner before compiling. It will create a header that `zmap.h` automatically detects.
+The library detects C++ compilers automatically. The C++ wrapper lives in the **`z_map`** namespace.
 
-```bash
-# Scan your source folder (for example, src/ or .) and output to 'z_registry.h'.
-python3 z-core/zscanner.py . z_registry.h
+```cpp
+#include <iostream>
+#include <string>
+#include "zmap.h"
 
-# Compile (Include the folder where z_registry.h lives).
-gcc main.c -I. -o game
+// Request types (scanner sees this even in .cpp files).
+DEFINE_MAP_TYPE(int, float, IntFloat)
+
+// Helpers
+uint32_t hash_int(int k) { return ZMAP_HASH_SCALAR(k); }
+int cmp_int(int a, int b) { return a - b; }
+
+int main()
+{
+    // RAII handles memory automatically.
+    // Constructor takes hash and compare functions.
+    z_map::map<int, float> data(hash_int, cmp_int);
+
+    // STL-like API.
+    data.put(10, 1.5f);
+    data.insert_or_assign(20, 2.5f);
+
+    // Check existence.
+    if (data.contains(10)) {
+        std::cout << "Found 10: " << *data.get(10) << "\n";
+    }
+
+    // Range-based for loops.
+    for(auto& item : data) {
+        std::cout << "Key: " << item.key << ", Val: " << item.value << "\n";
+    }
+
+    return 0;
+}
 ```
+
+## Compilation Guide
+
+Since `zmap.h` relies on code generation for its type safety, here you have the guide if you use the scanner.
+
+**[Read the Compilation Guide](examples/README.md)** for detailed instructions on how to use `zscanner.py`.
 
 ## Manual Setup
 
@@ -94,7 +126,7 @@ If you cannot use Python or prefer manual control, you can use the **Registry He
     X(char*, int, StrInt)     \
     X(int, float, IntFloat)
 
-// Include Library (AFTER defining the macro).
+// **IT HAS TO BE INCLUDED AFTER, NOT BEFORE**.
 #include "zmap.h"
 
 #endif
@@ -102,11 +134,11 @@ If you cannot use Python or prefer manual control, you can use the **Registry He
 
 * Include `"my_maps.h"` instead of `"zmap.h"` in your C files.
 
-## API Reference
+## API Reference (C)
 
 `zmap.h` uses C11 `_Generic` to automatically select the correct function implementation based on the map pointer you pass.
 
-### Initialization & Management
+**Initialization & Management**
 
 | Macro | Description |
 | :--- | :--- |
@@ -116,7 +148,7 @@ If you cannot use Python or prefer manual control, you can use the **Registry He
 | `map_clear(m)` | Clears all items (memset to 0) but keeps the allocated memory capacity. |
 | `map_size(m)` | Returns the number of active items (`size_t`). |
 
-### Data Access
+**Data Access**
 
 | Macro | Description |
 | :--- | :--- |
@@ -125,7 +157,7 @@ If you cannot use Python or prefer manual control, you can use the **Registry He
 | `map_contains(m, key)` | Returns `true` if the key exists in the map, otherwise `false`. |
 | `map_remove(m, key)` | Removes the item associated with `key`. Does nothing if the key is missing. |
 
-### Iteration
+**Iteration**
 
 | Macro | Description |
 | :--- | :--- |
@@ -144,7 +176,7 @@ while (map_iter_next(&it, &key, &val)) { ... }
 | `ZMAP_HASH_STR(char *s)` | FNV-1a hash helper for null-terminated C strings. |
 | `ZMAP_HASH_SCALAR(val)` | FNV-1a hash helper for scalar types (`int`, `long`, `float`, etc.). |
 
-## Extensions (Experimental)
+### Extensions (Experimental)
 
 If you are using a compiler that supports `__attribute__((cleanup))` (like GCC or Clang), you can use the **Auto-Cleanup** extension to automatically free maps when they go out of scope.
 
@@ -164,6 +196,40 @@ void process_data()
 ```
 
 > **Disable Extensions:** To force standard compliance and disable these extensions, define `Z_NO_EXTENSIONS` before including the library.
+
+## API Reference (C++)
+
+The C++ wrapper lives in the **`z_map`** namespace. It strictly adheres to RAII principles and delegates all logic to the underlying C implementation.
+
+### `class z_map::map<K, V>`
+
+**Constructors & Management**
+
+| Method | Description |
+| :--- | :--- |
+| `map(hash_fn, cmp_fn)` | Constructs map with specific helpers. |
+| `~map()` | Destructor. Automatically calls `map_free`. |
+| `operator=` | Move assignment operator. |
+| `size()` | Returns current number of elements. |
+| `empty()` | Returns `true` if size is 0. |
+| `clear()` | Clears items but keeps capacity. |
+
+**Access & Modification**
+
+| Method | Description |
+| :--- | :--- |
+| `put(k, v)` | Inserts or updates key-value pair. Throws `std::bad_alloc` on failure. |
+| `insert_or_assign(k, v)` | Alias for `put`. |
+| `get(k)` | Returns `V*` or `const V*`. Returns `nullptr` if not found. |
+| `contains(k)` | Returns `true` if key exists. |
+| `erase(k)` | Removes the key if present. |
+
+**Iterators**
+
+| Method | Description |
+| :--- | :--- |
+| `begin()`, `end()` | Forward iterators compatible with STL. Returns reference to bucket (`{key, value}`). |
+| `cbegin()`, `cend()` | Const iterators for read-only access. |
 
 ## Memory Management
 
