@@ -1,4 +1,5 @@
 
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include "zmap.h"
@@ -6,9 +7,9 @@
 DEFINE_MAP_TYPE(char*, int,   StrInt)
 DEFINE_MAP_TYPE(int,   float, IntFloat)
 
-uint32_t hash_str(char *key)
+uint32_t hash_str(char *key, uint32_t seed) 
 { 
-    return ZMAP_HASH_STR(key); 
+    return ZMAP_HASH_STR(key, seed); 
 }
 
 int cmp_str(char *a, char *b) 
@@ -16,9 +17,9 @@ int cmp_str(char *a, char *b)
     return strcmp(a, b); 
 }
 
-uint32_t hash_int(int key) 
+uint32_t hash_int(int key, uint32_t seed) 
 { 
-    return ZMAP_HASH_SCALAR(key); 
+    return ZMAP_HASH_SCALAR(key, seed); 
 }
 
 int cmp_int(int a, int b) 
@@ -26,7 +27,8 @@ int cmp_int(int a, int b)
     return a - b; 
 }
 
-int main(void) {
+int main(void) 
+{
     printf("-> 'String -> Int' Map (Leaderboard)\n");
     
     map_StrInt leaderboard = map_init(StrInt, hash_str, cmp_str);

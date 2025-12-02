@@ -15,4 +15,8 @@
     X(int, float, IntFloat) \
     X(int, int, IntInt) \
 
+/* Stable Maps */
+#define Z_AUTOGEN_STABLE_MAPS(X) \
+    /* No stable maps found */
+
 #endif // Z_REGISTRY_H

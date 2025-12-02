@@ -20,11 +20,15 @@ void print_map(const Map& m, const std::string& label)
 
 int main() 
 {
-    auto hash_int = [](int k) -> uint32_t { return static_cast<uint32_t>(k * 2654435761); };
+    auto hash_int = [](int k, uint32_t seed) -> uint32_t { 
+        return static_cast<uint32_t>((k * 2654435761u) ^ seed); 
+    };
+    
     auto cmp_int = [](int a, int b) -> int { return a - b; };
 
     std::cout << "=> Basic operations\n";
     
+    // Constructor accepts optional seed and load_factor arguments.
     z_map::map<int, float> my_map(hash_int, cmp_int);
 
     my_map.put(1, 1.1f);
@@ -73,7 +77,7 @@ int main()
         
         assert(recipient.size() == 3);
         assert(my_map.size() == 0);
-    } // 'recipient' goes out of scope here, so memory should be freed automatically.
+    } // 'recipient' goes out of scope here; memory freed automatically.
 
     std::cout << "Map destroyed successfully out of scope.\n";
 
