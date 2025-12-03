@@ -1,21 +1,19 @@
-name: Build and Sync
+name: Build, Test, and Sync
 
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-  #    This runs every day at midnight UTC to check for z-core updates
   schedule:
     - cron: '0 0 * * *'
-  # Allows you to click "Run workflow" manually in GitHub Actions tab
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -30,17 +28,28 @@ jobs:
         with:
           python-version: '3.x'
 
-      # Update z-core to the latest commit
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget make gcc
+
       - name: Update z-core submodule
         run: |
           git submodule update --remote --merge
           echo "Submodule updated to latest remote version."
 
-      - name: Run Make
-        run: make
+      - name: Build Library
+        run: make bundle
+
+      - name: Run Benchmarks (Smoke Test)
+        shell: bash
+        run: |
+          # pipefail ensures that if 'make bench' fails, the step fails
+          set -o pipefail
+          make bench | tee benchmark_results.txt
 
       - name: Commit and Push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Auto-update: Bump z-core and regenerate zmap.h [skip ci]"
+          commit_message: "Auto-update: Bump z-core, regen zmap.h, update benchmarks [skip ci]"
           file_pattern: '.'
