@@ -1,25 +1,46 @@
 # zmap.h
 
-`zmap.h` provides generic hash maps (dictionaries) for C projects. It uses open addressing with linear probing for high performance and cache efficiency. Unlike typical C map implementations that force `void*` casting or string-only keys, `zmap.h` uses C11 `_Generic` selection to generate fully typed, type-safe implementations for your specific key-value pairs.
+`zmap.h` is a high-performance, type-safe hash map library for C11 and C++.
 
-It also includes a robust **C++11 wrapper**, allowing you to use it as a lightweight, drop-in map class (`z_map::map`) in mixed codebases while sharing the same underlying C implementation.
+It implements **Open Addressing** with **Robin Hood Hashing** and **Fibonacci Indexing**, achieving exceptional cache locality and resilience against high load factors (up to 0.9).
+
+Unlike standard C hash maps (like `uthash` or chaining implementations) that suffer from pointer chasing and malloc overhead, `zmap.h` stores data in contiguous memory. It uses C11 `_Generic` selection to generate fully typed implementations, providing the performance of a handwritten map with the ease of use of a generic library.
 
 ## Features
 
-* **Type Safety**: Compiler errors if you try to put a `float` key into an `int` map.
-* **Native Performance**: Open addressing with linear probing reduces pointer chasing and malloc overhead compared to chained hashmaps.
-* **C++ Support**: Includes a full C++ class wrapper with RAII, iterators, and STL-like API.
-* **Zero Boilerplate**: Use the **Z-Scanner** tool to automatically generate type registrations.
-* **Header Only**: No linking required.
-* **Memory Agnostic**: Supports custom allocators (Arenas, Pools, Debuggers).
-* **Zero Dependencies**: Only standard C headers used.
+* **Robin Hood Hashing**: Minimizes probe variance, enabling high load factors without performance degradation.
+* **Fibonacci Indexing**: Mathematically optimal distribution for all key types, protecting against bad hash functions.
+* **Type Safety**: Compiler errors if you mix types. No `void*` casting.
+* **Stable Maps**: Optional "Stable" mode where pointers to values remain valid even after resizes.
+* **WyHash Support**: Automatically uses the ultra-fast WyHash algorithm if `zhash.h` is present.
+* **C++ Support**: Includes a zero-cost C++ wrapper (`z_map::map`) with STL-compatible iterators.
+* **Header Only**: No linking required. Drop it in and go.
+
+## Benchmarks
+
+This repository automatically runs benchmarks on every commit via GitHub Actions.
+
+**[View Live Benchmark Results.](benchmark_results.txt)**
+
+### Reference Performance (Nitro AN515-55)
+Comparison vs **uthash** (standard C hash map) managing 1,000,000 string keys:
+
+| Operation | zmap (WyHash) | uthash (Jenkin's) | Speedup |
+| :--- | :--- | :--- | :--- |
+| **Insert** | 0.1637s | 0.3269s | **2.00x Faster** |
+| **Lookup (Hit)** | 0.1124s | 0.2582s | **2.30x Faster** |
+| **Lookup (Miss)** | 0.1092s | 0.3449s | **3.16x Faster** |
+| **Delete All** | 0.0024s | 0.1062s | **44.29x Faster** |
+
+> **Note on CI Performance:** The live results in `benchmark_results.txt` run on shared cloud runners (Ubuntu/Azure). The raw timings might be slower than a local native machine due to virtualization noise.
 
 ## Installation
 
 `zmap.h` works best when you use the provided scanner script to manage type registrations, though it can be used manually.
 
 1.  Copy `zmap.h` (and `zcommon.h` if separated) to your project's include folder.
-2.  Add the `z-core` tools (optional but recommended).
+2. **(Recommended)** Copy `zhash.h` to the same folder (improved string hashing performance).
+3.  Add the `z-core` tools (optional but recommended).
 ```bash
 git submodule add [https://github.com/z-libs/z-core.git](https://github.com/z-libs/z-core.git) z-core
 ```
@@ -134,47 +155,87 @@ If you cannot use Python or prefer manual control, you can use the **Registry He
 
 * Include `"my_maps.h"` instead of `"zmap.h"` in your C files.
 
+## Advanced Features
+
+### Stable Maps (Pointer Stability)
+
+Standard `zmap` stores values *inline* in the bucket array for speed. However, if the map resizes, these values move in memory, invalidating any pointers you might be holding.
+
+If you need pointers to remain valid (for example, for linking structures), use a **Stable Map**.
+
+```c
+// Define a stable map.
+DEFINE_STABLE_MAP_TYPE(char*, MyStruct, StableStr)
+
+// Initialize.
+map_StableStr m = map_init_stable(StableStr, hash_fn, cmp_fn);
+
+// Pointers returned by map_get are now stable forever (until removal).
+MyStruct *ptr = map_get(&m, "key");
+```
+
+### High-Performance Hashing (`zhash.h`)
+
+`zmap.h` automatically detects if `zhash.h` is available.
+* **Without `zhash.h`:** Uses FNV-1a (Simple, fast for ints, slower for long strings).
+* **With `zhash.h`:** Uses **WyHash** (SIMD-optimized, 8 bytes/cycle).
+
+**Recommendation:** Always include `zhash.h` if you use string keys.
+
+### Identity Hashing (Bitcoin / UUIDs)
+
+If your keys are already random (for example, SHA-256 hashes, UUIDs, pointers), **do not hash them again**. It wastes CPU. Use an "Identity Hash" that just casts the first 4 bytes of your key to `uint32_t`.
+
+```c
+uint32_t hash_identity(uint256 k)
+{
+    uint32_t h; memcpy(&h, &k, 4); return h;
+}
+```
+
+Because `zmap` uses **Fibonacci Indexing**, it will take these raw bits and distribute them perfectly across the map, giving you $O(1)$ performance with near-zero hashing cost.
+
 ## API Reference (C)
 
-`zmap.h` uses C11 `_Generic` to automatically select the correct function implementation based on the map pointer you pass.
+`zmap.h` uses C11 `_Generic` dispatch to provide a unified, polymorphic API. You generally use the same macros (`map_put`, `map_get`) regardless of whether you are using a Standard or Stable map.
 
-**Initialization & Management**
+**Initialization & Lifecycle**
 
-| Macro | Description |
-| :--- | :--- |
-| `map_init(Name, hash_fn, cmp_fn)` | Returns an empty map struct with default load factor (0.75). |
-| `map_init_chk(Name, h, c, load)` | Returns an empty map with a custom load factor (0.1 to 0.95). |
-| `map_free(m)` | Frees the internal bucket array and zeroes the map structure. |
-| `map_clear(m)` | Clears all items (memset to 0) but keeps the allocated memory capacity. |
-| `map_size(m)` | Returns the number of active items (`size_t`). |
-
-**Data Access**
-
-| Macro | Description |
-| :--- | :--- |
-| `map_put(m, key, val)` | Inserts the key-value pair. If the key exists, updates the value. Returns `Z_OK` or `Z_ERR`. |
-| `map_get(m, key)` | Returns a **pointer** to the value associated with `key`, or `NULL` if not found. |
-| `map_contains(m, key)` | Returns `true` if the key exists in the map, otherwise `false`. |
-| `map_remove(m, key)` | Removes the item associated with `key`. Does nothing if the key is missing. |
+| Macro | Description | Standard vs. Stable Behavior |
+| :--- | :--- | :--- |
+| `map_init(Name, h, c)` | Creates a **Standard** map with default load factor (0.9). | Stores values **inline** for maximum cache locality. |
+| `map_init_stable(Name, h, c)` | Creates a **Stable** map with default load factor. | Stores values **on the heap**. Pointers to values remain valid after resizes. |
+| `map_init_ext_##Name(...)` | *Advanced.* Initialize with a custom load factor (0.1 - 0.95). | Same as above. |
+| `map_free(m)` | Frees all memory associated with the map. | **Standard:** Frees the bucket array.<br>**Stable:** Frees every allocated value individually, then the array. |
+| `map_clear(m)` | Removes all items but keeps the allocated capacity. | **Stable:** Frees all value pointers but keeps the bucket array. |
+| `map_set_seed(m, s)` | Sets the random seed for the hash function. | Useful for protecting against HashDoS attacks. |
 
 **Iteration**
 
+Iteration is uniform across both types. The iterator skips empty and deleted slots.
+
 | Macro | Description |
 | :--- | :--- |
-| `map_iter_init(Name, m)` | Returns a `zmap_iter_Name` struct initialized to the start of the map. |
-| `map_iter_next(it, k, v)` | Advances the iterator. Returns `true` if a pair was retrieved, `false` at the end. |
+| `map_iter_init(Name, m)` | Creates a new iterator struct (`zmap_iter_Name`) starting at index 0. |
+| `map_iter_next(it, k, v)` | Advances iterator.<br>**Out:** Writes key to `*k` and value to `*v`.<br>**Return:** `true` if found, `false` if end of map. |
 
 **Example:**
 ```c
-zmap_iter_int it = map_iter_init(int, &my_map);
-zstr key; int val;
-while (map_iter_next(&it, &key, &val)) { ... }
+// Works identically for map_StrInt (Standard) or map_StableStr (Stable)
+zmap_iter_StrInt it = map_iter_init(StrInt, &my_map);
+char *key; int val;
+
+while (map_iter_next(&it, &key, &val)) {
+    printf("Key: %s, Val: %d\n", key, val);
+}
 ```
+
+**Helper Macros**
 
 | Function/Macro | Description |
 | :--- | :--- |
-| `ZMAP_HASH_STR(char *s)` | FNV-1a hash helper for null-terminated C strings. |
-| `ZMAP_HASH_SCALAR(val)` | FNV-1a hash helper for scalar types (`int`, `long`, `float`, etc.). |
+| `ZMAP_HASH_STR(char *s, seed)` | Optimized hash for C-strings (uses WyHash if `zhash.h` is present). |
+| `ZMAP_HASH_SCALAR(val, seed)` | Optimized hash for integers/pointers/floats (uses FNV-1a fallback or WyHash). |
 
 ### Extensions (Experimental)
 
