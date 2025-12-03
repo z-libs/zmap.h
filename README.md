@@ -32,6 +32,8 @@ Comparison vs **uthash** (standard C hash map) managing 1,000,000 string keys:
 | **Lookup (Miss)** | 0.1092s | 0.3449s | **3.16x Faster** |
 | **Delete All** | 0.0024s | 0.1062s | **44.29x Faster** |
 
+![Benchmark](https://raw.githubusercontent.com/z-libs/zmap.h/svg/benchmark.svg)
+
 > **Note on CI Performance:** The live results in `benchmark_results.txt` run on shared cloud runners (Ubuntu/Azure). The raw timings might be slower than a local native machine due to virtualization noise.
 
 ## Installation

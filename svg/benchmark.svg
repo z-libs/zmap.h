@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <rect width="800" height="450" fill="#0d1117" rx="10"/>
+
+  <text x="400" y="40" text-anchor="middle" fill="#c9d1d9" font-size="20" font-weight="bold">zmap vs uthash Performance</text>
+  <text x="400" y="65" text-anchor="middle" fill="#8b949e" font-size="14">1,000,000 String Keys (Time in Seconds)</text>
+
+  <g transform="translate(560, 55)">
+    <rect width="15" height="15" fill="#238636" rx="3"/>
+    <text x="25" y="12" fill="#c9d1d9" font-size="12">zmap (WyHash)</text>
+    
+    <rect x="0" y="25" width="15" height="15" fill="#da3633" rx="3"/>
+    <text x="25" y="37" fill="#c9d1d9" font-size="12">uthash (Jenkin's)</text>
+  </g>
+
+  <g transform="translate(80, 100)">
+    <line x1="0" y1="280" x2="640" y2="280" stroke="#30363d" stroke-width="1"/>
+    <text x="-10" y="285" text-anchor="end" fill="#8b949e" font-size="12">0.0s</text>
+    
+    <line x1="0" y1="210" x2="640" y2="210" stroke="#30363d" stroke-width="1" stroke-dasharray="4"/>
+    <text x="-10" y="215" text-anchor="end" fill="#8b949e" font-size="12">0.1s</text>
+    
+    <line x1="0" y1="140" x2="640" y2="140" stroke="#30363d" stroke-width="1" stroke-dasharray="4"/>
+    <text x="-10" y="145" text-anchor="end" fill="#8b949e" font-size="12">0.2s</text>
+    
+    <line x1="0" y1="70" x2="640" y2="70" stroke="#30363d" stroke-width="1" stroke-dasharray="4"/>
+    <text x="-10" y="75" text-anchor="end" fill="#8b949e" font-size="12">0.3s</text>
+
+    <g transform="translate(40, 0)">
+      <rect x="50" y="51" width="40" height="229" fill="#da3633" rx="2">
+        <title>uthash: 0.3269s</title>
+      </rect>
+      <text x="70" y="45" text-anchor="middle" fill="#ff7b72" font-size="11" font-weight="bold">0.327s</text>
+
+      <rect x="5" y="165" width="40" height="115" fill="#238636" rx="2">
+        <title>zmap: 0.1637s</title>
+      </rect>
+      <text x="25" y="158" text-anchor="middle" fill="#3fb950" font-size="11" font-weight="bold">0.164s</text>
+
+      <text x="47" y="300" text-anchor="middle" fill="#c9d1d9" font-size="14" font-weight="bold">Insert</text>
+      <text x="47" y="320" text-anchor="middle" fill="#3fb950" font-size="12">2.0x Faster</text>
+    </g>
+
+    <g transform="translate(200, 0)">
+      <rect x="50" y="99" width="40" height="181" fill="#da3633" rx="2"/>
+      <text x="70" y="93" text-anchor="middle" fill="#ff7b72" font-size="11" font-weight="bold">0.258s</text>
+
+      <rect x="5" y="201" width="40" height="79" fill="#238636" rx="2"/>
+      <text x="25" y="195" text-anchor="middle" fill="#3fb950" font-size="11" font-weight="bold">0.112s</text>
+
+      <text x="47" y="300" text-anchor="middle" fill="#c9d1d9" font-size="14" font-weight="bold">Lookup (Hit)</text>
+      <text x="47" y="320" text-anchor="middle" fill="#3fb950" font-size="12">2.3x Faster</text>
+    </g>
+
+    <g transform="translate(360, 0)">
+      <rect x="50" y="38" width="40" height="242" fill="#da3633" rx="2"/>
+      <text x="70" y="32" text-anchor="middle" fill="#ff7b72" font-size="11" font-weight="bold">0.345s</text>
+
+      <rect x="5" y="203" width="40" height="77" fill="#238636" rx="2"/>
+      <text x="25" y="197" text-anchor="middle" fill="#3fb950" font-size="11" font-weight="bold">0.109s</text>
+
+      <text x="47" y="300" text-anchor="middle" fill="#c9d1d9" font-size="14" font-weight="bold">Lookup (Miss)</text>
+      <text x="47" y="320" text-anchor="middle" fill="#3fb950" font-size="12">3.2x Faster</text>
+    </g>
+
+    <g transform="translate(520, 0)">
+      <rect x="50" y="206" width="40" height="74" fill="#da3633" rx="2"/>
+      <text x="70" y="200" text-anchor="middle" fill="#ff7b72" font-size="11" font-weight="bold">0.106s</text>
+
+      <rect x="5" y="278" width="40" height="2" fill="#238636" rx="2"/>
+      <text x="25" y="270" text-anchor="middle" fill="#3fb950" font-size="11" font-weight="bold">0.002s</text>
+
+      <text x="47" y="300" text-anchor="middle" fill="#c9d1d9" font-size="14" font-weight="bold">Delete All</text>
+      <text x="47" y="320" text-anchor="middle" fill="#3fb950" font-size="12">44x Faster</text>
+    </g>
+
+  </g>
+</svg>
