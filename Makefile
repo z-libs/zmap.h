@@ -38,10 +38,17 @@ bench_btc: bundle download_uthash
 	@echo "Running..."
 	./$(BENCH_DIR_C)/bench_uthash_btc
 
-bench: bench_int bench_str bench_btc
+bench_btc_large: bundle download_uthash
+	@echo "=> Compiling Bitcoin (Large) Benchmark..."
+	gcc -O3 -o $(BENCH_DIR_C)/bench_uthash_btc_large $(BENCH_DIR_C)/bench_uthash_btc_large.c -I. -I$(BENCH_DIR_C)
+	@echo "Running..."
+	./$(BENCH_DIR_C)/bench_uthash_btc_large
+
+
+bench: bench_int bench_str bench_btc bench_btc_large
 
 clean:
-	rm -f $(BENCH_DIR_C)/bench_uthash_int $(BENCH_DIR_C)/bench_uthash_str $(BENCH_DIR_C)/bench_uthash_btc
+	rm -f $(BENCH_DIR_C)/bench_uthash_int $(BENCH_DIR_C)/bench_uthash_str $(BENCH_DIR_C)/bench_uthash_btc $(BENCH_DIR_C)/bench_uthash_btc_large
 	# Optional: remove downloaded headers to force fresh fetch
 	rm -f $(BENCH_DIR_C)/uthash.h
 
