@@ -43,7 +43,7 @@ bench: bench_int bench_str bench_btc
 clean:
 	rm -f $(BENCH_DIR_C)/bench_uthash_int $(BENCH_DIR_C)/bench_uthash_str $(BENCH_DIR_C)/bench_uthash_btc
 	# Optional: remove downloaded headers to force fresh fetch
-	# rm -f $(BENCH_DIR_C)/uthash.h
+	rm -f $(BENCH_DIR_C)/uthash.h
 
 init:
 	git submodule update --init --recursive
