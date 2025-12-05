@@ -47,6 +47,7 @@ jobs:
           # pipefail ensures that if 'make bench' fails, the step fails
           set -o pipefail
           make bench | tee benchmark_results.txt
+          make clean
 
       - name: Commit and Push changes
         uses: stefanzweifel/git-auto-commit-action@v5
