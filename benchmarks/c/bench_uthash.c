@@ -81,7 +81,7 @@ int cmp_int(int a, int b)
 
 /* Globals for persistence across tests. */
 struct my_struct *users = NULL;
-map_IntInt m_zmap;
+map(IntInt) m_zmap;
 
 /* Insertion test. */
 double test_insert_uthash() 

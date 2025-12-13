@@ -82,7 +82,7 @@ int cmp_btc(uint256 a, uint256 b)
 }
 
 struct btc_node *mempool_ut = NULL;
-map_BtcMap m_zmap;
+map(BtcMap) m_zmap;
 
 /* Insertion test. */
 double test_insert_uthash() 

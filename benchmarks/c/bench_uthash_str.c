@@ -72,7 +72,7 @@ int cmp_str(char* a, char* b)
 
 /* Globals for persistence across tests. */
 struct str_node *users = NULL;
-map_StrMap m_zmap;
+map(StrMap) m_zmap;
 
 /* Insertion test. */
 double test_insert_uthash() 
