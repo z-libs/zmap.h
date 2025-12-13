@@ -16,6 +16,7 @@ struct btc_node
     UT_hash_handle hh; 
 };
 
+#define ZMAP_SHORT_NAMES
 #define REGISTER_MAP_TYPES(X) X(uint256, int, BtcMap)
 #include "zmap.h"
 

@@ -13,8 +13,8 @@ struct my_struct
     UT_hash_handle hh;
 };
 
-// We could separate this so it goes to a registry header,
-// but in this case it is unnecessary. So we goiwith the manual mode.
+
+#define ZMAP_SHORT_NAMES
 #define REGISTER_MAP_TYPES(X) X(int, int, IntInt)
 #include "zmap.h"
 

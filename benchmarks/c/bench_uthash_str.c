@@ -14,6 +14,7 @@ struct str_node
     UT_hash_handle hh;
 };
 
+#define ZMAP_SHORT_NAMES
 #define REGISTER_MAP_TYPES(X) X(char*, int, StrMap)
 #include "zmap.h"
 
