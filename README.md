@@ -38,7 +38,7 @@ git submodule add https://github.com/z-libs/z-core.git z-core
 If you use the clib package manager, run:
 
 ```bash    
-clib install z-libs/zmap
+clib install z-libs/zdk
 ```
 
 ### ZDK (Recommended)
