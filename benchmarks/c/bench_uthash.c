@@ -15,7 +15,7 @@ struct my_struct
 
 
 #define ZMAP_SHORT_NAMES
-#define REGISTER_MAP_TYPES(X) X(int, int, IntInt)
+#define REGISTER_ZMAP_TYPES(X) X(int, int, IntInt)
 #include "zmap.h"
 
 #define ITER_ITEMS  1000000

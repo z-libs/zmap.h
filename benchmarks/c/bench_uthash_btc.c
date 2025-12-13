@@ -18,7 +18,7 @@ struct btc_node
 };
 
 #define ZMAP_SHORT_NAMES
-#define REGISTER_MAP_TYPES(X) X(uint256, int, BtcMap)
+#define REGISTER_ZMAP_TYPES(X) X(uint256, int, BtcMap)
 #include "zmap.h"
 
 #define ITER_ITEMS  500000

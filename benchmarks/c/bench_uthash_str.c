@@ -15,7 +15,7 @@ struct str_node
 };
 
 #define ZMAP_SHORT_NAMES
-#define REGISTER_MAP_TYPES(X) X(char*, int, StrMap)
+#define REGISTER_ZMAP_TYPES(X) X(char*, int, StrMap)
 #include "zmap.h"
 
 #define ITER_ITEMS  1000000
