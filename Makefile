@@ -60,6 +60,7 @@ clean: clean_bench clean_zerror
 clean_bench:
 	rm -f $(BENCH_DIR_C)/bench_uthash_int $(BENCH_DIR_C)/bench_uthash_str $(BENCH_DIR_C)/bench_uthash_btc $(BENCH_DIR_C)/bench_uthash_btc_large
 	rm -f $(BENCH_DIR_C)/uthash.h
+
 clean_zerror:
 	@echo "Removing 'zerror.h'..."
 	@rm zerror.h
