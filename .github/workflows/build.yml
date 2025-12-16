@@ -47,7 +47,7 @@ jobs:
           # pipefail ensures that if 'make bench' fails, the step fails
           set -o pipefail
           make bench | tee benchmark_results.txt
-          make clean
+          make clean_bench
 
       - name: Run Unit Tests
         run: |

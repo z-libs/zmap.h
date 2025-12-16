@@ -53,7 +53,7 @@ bench_btc_large: bundle download_uthash
 	./$(BENCH_DIR_C)/bench_uthash_btc_large
 
 
-bench: bench_int bench_str bench_btc bench_btc_large clean_bench
+bench: bench_int bench_str bench_btc bench_btc_large
 
 clean: clean_bench clean_zerror
 
