@@ -2,10 +2,14 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-#include "zmap.h"
 
-DEFINE_MAP_TYPE(char*, int,   StrInt)
-DEFINE_MAP_TYPE(int,   float, IntFloat)
+#define REGISTER_ZMAP_TYPES(X)   \
+    X(char*, int, StrInt)   \
+    X(int, float, IntFloat)
+
+
+#define ZMAP_SHORT_NAMES
+#include "zmap.h"
 
 uint32_t hash_str(char *key, uint32_t seed) 
 { 
@@ -31,7 +35,7 @@ int main(void)
 {
     printf("-> 'String -> Int' Map (Leaderboard)\n");
     
-    map_StrInt leaderboard = map_init(StrInt, hash_str, cmp_str);
+    map(StrInt) leaderboard = map_init(StrInt, hash_str, cmp_str);
 
     printf("  Adding players...\n");
     map_put(&leaderboard, "Alice", 100);
@@ -62,7 +66,7 @@ int main(void)
 
     printf("-> 'Int -> Float' Map (Product IDs)\n");
 
-    map_IntFloat products = map_init(IntFloat, hash_int, cmp_int);
+    map(IntFloat) products = map_init(IntFloat, hash_int, cmp_int);
 
     map_put(&products, 101, 9.99f);
     map_put(&products, 102, 19.50f);
@@ -83,7 +87,7 @@ int main(void)
 
     map_free(&products);
 
-    #ifdef Z_HAS_CLEANUP
+    #if defined(Z_HAS_CLEANUP) && Z_HAS_CLEANUP
     printf("-> Auto-Cleanup Extension\n");
     {
         printf("  Creating auto-free map inside scope...\n");

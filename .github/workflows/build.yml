@@ -49,6 +49,13 @@ jobs:
           make bench | tee benchmark_results.txt
           make clean
 
+      - name: Run Unit Tests
+        run: |
+          echo "Running C and C++ Test Suites..."
+          # Runs the 'test' target from your Makefile. 
+          # If it fails (non-zero exit), we print an error and exit.
+          make test || { echo "::error::Unit tests failed! Check the logs above for assertion errors."; exit 1; }
+
       - name: Commit and Push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:

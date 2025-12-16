@@ -23,7 +23,7 @@ int str_cmp(const char* a, const char* b)
 
 zres process_scores(void)
 {
-    zmap_autofree(StrInt) scores = map_init(StrInt, str_hash, str_cmp);
+    map_autofree(StrInt) scores = map_init(StrInt, str_hash, str_cmp);
 
     check_ctx(map_put_safe(&scores, "Alice", 100), "Failed to add Alice");
     check_ctx(map_put_safe(&scores, "Bob", 200),   "Failed to add Bob");
