@@ -174,7 +174,45 @@ int main(void)
     
     /* Cleanup */
     delete_all_users();
-    printf("Count after clear: %u\n", HASH_COUNT(users));
+    
+    printf("\n** Sorting Test **\n");
+    add_user(10, "Zack");
+    add_user(20, "Alice");
+    add_user(30, "Bob");
+    add_user(5, "Yvonne");
+    
+    printf("Unsorted:\n");
+    print_users();
+    
+    printf("\nSorted by name:\n");
+    HASH_SRT(hh, users, name_sort);
+    print_users();
+    
+    /* Test HASH_SELECT */
+    printf("\n** HASH_SELECT Demo **\n");
+    struct my_user *selected_users = NULL;
+    
+    /* Select users with ID < 20 */
+    #define ID_LESS_THAN_20(x) ((x)->id < 20)
+    
+    int id_under_20(struct my_user *u) { return u->id < 20; }
+    
+    HASH_SELECT(hh, selected_users, hh, users, id_under_20);
+    
+    printf("Selected users (ID < 20):\n");
+    struct my_user *s;
+    for (s = selected_users; s != NULL; s = (struct my_user*)s->hh.next) {
+        printf("  id=%d, name=%s\n", s->id, s->name);
+    }
+    
+    // Cleanup selected
+    struct my_user *cur;
+    HASH_ITER(hh, selected_users, cur, tmp) {
+        HASH_DEL(selected_users, cur);
+        free(cur);
+    }
+    
+    printf("\nCount after deletion: %u\n", HASH_COUNT(users));
     
     /* Test string-keyed hash */
     printf("\n** String Keys **\n");
