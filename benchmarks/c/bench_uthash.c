@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
+#define ZMAP_SHORT_NAMES
+#define REGISTER_ZMAP_TYPES(X) X(int, int, IntInt)
+#include "zmap.h"
 #include "uthash.h"
 
 struct my_struct 
@@ -12,11 +15,6 @@ struct my_struct
     int value;
     UT_hash_handle hh;
 };
-
-
-#define ZMAP_SHORT_NAMES
-#define REGISTER_ZMAP_TYPES(X) X(int, int, IntInt)
-#include "zmap.h"
 
 #define ITER_ITEMS  1000000
 #define ITER_MISSES 1000000

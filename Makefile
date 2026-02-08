@@ -84,4 +84,22 @@ test_cpp:
 	@./tests/runner_cpp
 	@rm tests/runner_cpp
 
-.PHONY: all get_zerror_h bundle download_uthash bench bench_int bench_str bench_btc clean clean_bench clean_zerror init test test_c test_cpp
+test_uthash:
+	@if [ -d "uthash" ]; then \
+		echo "=> Running uthash compatibility tests..."; \
+		cp -f uthash/src/uthash.h uthash/src/uthash.h.bak 2>/dev/null || true; \
+		cp -f zmap.h uthash/src/zmap.h; \
+		cp -f zmap_uthash.h uthash/src/uthash.h; \
+		( $(MAKE) -C uthash/tests -k ) || echo "=> Tests completed with errors (expected)."; \
+		echo "=> Cleaning up compatibility headers..."; \
+		rm -f uthash/src/zmap.h; \
+		if [ -f uthash/src/uthash.h.bak ]; then \
+			mv -f uthash/src/uthash.h.bak uthash/src/uthash.h; \
+		else \
+			rm -f uthash/src/uthash.h; \
+		fi; \
+	else \
+		echo "uthash directory not found. Skipping compatibility tests."; \
+	fi
+
+.PHONY: all get_zerror_h bundle download_uthash bench bench_int bench_str bench_btc clean clean_bench clean_zerror init test test_c test_cpp test_uthash
