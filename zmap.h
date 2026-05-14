@@ -322,7 +322,6 @@ namespace z_map
         ~map()
         {
             Traits::free(&inner);
-            inner = {};
         }
 
         map &operator=(map &&other) noexcept 
@@ -330,7 +329,6 @@ namespace z_map
             if (this != &other) 
             {
                 Traits::free(&inner);
-                inner = {};
                 inner = other.inner;
                 other.inner = Traits::init(inner.hash_func, inner.cmp_func, inner.load_factor);
             }
