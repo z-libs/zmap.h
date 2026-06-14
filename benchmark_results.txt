@@ -13,24 +13,24 @@ Running...
 => Generating Data (1000000 items)...
 
 => Benchmark: Insertion (1000000 items)
-[UTHASH Insert] Time: 0.1809s
-[ZMAP Insert]   Time: 0.1048s
-   SUMMARY: ZMAP was 1.73x FASTER than UTHASH.
+[UTHASH Insert] Time: 0.1379s
+[ZMAP Insert]   Time: 0.0847s
+   SUMMARY: ZMAP was 1.63x FASTER than UTHASH.
 
 => Benchmark: Lookup Hit (1000000 items)
-[UTHASH Hit]    Time: 0.0981s (Found: 1000000)
-[ZMAP Hit]      Time: 0.0522s (Found: 1000000)
-   SUMMARY: ZMAP was 1.88x FASTER than UTHASH.
+[UTHASH Hit]    Time: 0.0788s (Found: 1000000)
+[ZMAP Hit]      Time: 0.0389s (Found: 1000000)
+   SUMMARY: ZMAP was 2.03x FASTER than UTHASH.
 
 => Benchmark: Lookup Miss (1000000 items)
-[UTHASH Miss]   Time: 0.1550s (Found: 0)
-[ZMAP Miss]     Time: 0.0520s (Found: 0)
-   SUMMARY: ZMAP was 2.98x FASTER than UTHASH.
+[UTHASH Miss]   Time: 0.1168s (Found: 0)
+[ZMAP Miss]     Time: 0.0423s (Found: 0)
+   SUMMARY: ZMAP was 2.76x FASTER than UTHASH.
 
 => Benchmark: Deletion (All items)
-[UTHASH Delete] Time: 0.0569s
+[UTHASH Delete] Time: 0.0457s
 [ZMAP Delete]   Time: 0.0003s
-   SUMMARY: ZMAP was 214.88x FASTER than UTHASH.
+   SUMMARY: ZMAP was 164.82x FASTER than UTHASH.
 => Compiling String Benchmark...
 gcc -O3 -o benchmarks/c/bench_uthash_str benchmarks/c/bench_uthash_str.c -I. -Ibenchmarks/c
 Running...
@@ -38,24 +38,24 @@ Running...
 => Generating Data (1000000 strings)...
 
 => Benchmark String: Insertion (1000000 items)
-[UTHASH Insert] Time: 0.4248s
-[ZMAP Insert]   Time: 0.1445s
-   SUMMARY: ZMAP was 2.94x FASTER than UTHASH.
+[UTHASH Insert] Time: 0.3016s
+[ZMAP Insert]   Time: 0.1269s
+   SUMMARY: ZMAP was 2.38x FASTER than UTHASH.
 
 => Benchmark String: Lookup Hit (1000000 items)
-[UTHASH Hit]    Time: 0.2268s (Found: 1000000)
-[ZMAP Hit]      Time: 0.1090s (Found: 1000000)
-   SUMMARY: ZMAP was 2.08x FASTER than UTHASH.
+[UTHASH Hit]    Time: 0.2285s (Found: 1000000)
+[ZMAP Hit]      Time: 0.0936s (Found: 1000000)
+   SUMMARY: ZMAP was 2.44x FASTER than UTHASH.
 
 => Benchmark String: Lookup Miss (1000000 items)
-[UTHASH Miss]   Time: 0.3100s (Found: 0)
-[ZMAP Miss]     Time: 0.1076s (Found: 0)
-   SUMMARY: ZMAP was 2.88x FASTER than UTHASH.
+[UTHASH Miss]   Time: 0.3533s (Found: 0)
+[ZMAP Miss]     Time: 0.0895s (Found: 0)
+   SUMMARY: ZMAP was 3.95x FASTER than UTHASH.
 
 => Benchmark String: Deletion (All items)
-[UTHASH Delete] Time: 0.0922s
+[UTHASH Delete] Time: 0.0695s
 [ZMAP Delete]   Time: 0.0003s
-   SUMMARY: ZMAP was 277.68x FASTER than UTHASH.
+   SUMMARY: ZMAP was 211.97x FASTER than UTHASH.
 => Compiling Bitcoin Benchmark...
 gcc -O3 -o benchmarks/c/bench_uthash_btc benchmarks/c/bench_uthash_btc.c -I. -Ibenchmarks/c
 Running...
@@ -63,24 +63,24 @@ Running...
 => Generating Data (TxIDs: 500000)...
 
 => Benchmark BTC: Insertion (500000 items)
-[UTHASH Insert] Time: 0.1182s
-[ZMAP Insert]   Time: 0.0828s
-   SUMMARY: ZMAP was 1.43x FASTER than UTHASH.
+[UTHASH Insert] Time: 0.0897s
+[ZMAP Insert]   Time: 0.0754s
+   SUMMARY: ZMAP was 1.19x FASTER than UTHASH.
 
 => Benchmark BTC: Lookup Hit (500000 items)
-[UTHASH Hit]    Time: 0.0818s (Found: 500000)
-[ZMAP Hit]      Time: 0.0327s (Found: 500000)
-   SUMMARY: ZMAP was 2.50x FASTER than UTHASH.
+[UTHASH Hit]    Time: 0.0578s (Found: 500000)
+[ZMAP Hit]      Time: 0.0269s (Found: 500000)
+   SUMMARY: ZMAP was 2.15x FASTER than UTHASH.
 
 => Benchmark BTC: Lookup Miss (500000 items)
-[UTHASH Miss]   Time: 0.1225s (Found: 0)
-[ZMAP Miss]     Time: 0.0228s (Found: 0)
-   SUMMARY: ZMAP was 5.37x FASTER than UTHASH.
+[UTHASH Miss]   Time: 0.0910s (Found: 0)
+[ZMAP Miss]     Time: 0.0200s (Found: 0)
+   SUMMARY: ZMAP was 4.54x FASTER than UTHASH.
 
 => Benchmark BTC: Deletion (All items)
-[UTHASH Delete] Time: 0.0259s
+[UTHASH Delete] Time: 0.0225s
 [ZMAP Delete]   Time: 0.0003s
-   SUMMARY: ZMAP was 76.74x FASTER than UTHASH.
+   SUMMARY: ZMAP was 76.17x FASTER than UTHASH.
 => Compiling Bitcoin (Large) Benchmark...
 gcc -O3 -o benchmarks/c/bench_uthash_btc_large benchmarks/c/bench_uthash_btc_large.c -I. -Ibenchmarks/c
 Running...
@@ -89,21 +89,21 @@ Running...
    (This may take several seconds...)
 
 => Benchmark BTC: Insertion (10000000 items)
-[UTHASH Insert] Time: 3.4139s
-[ZMAP Insert]   Time: 1.9150s
-   SUMMARY: ZMAP was 1.78x FASTER than UTHASH.
+[UTHASH Insert] Time: 3.1148s
+[ZMAP Insert]   Time: 1.9095s
+   SUMMARY: ZMAP was 1.63x FASTER than UTHASH.
 
 => Benchmark BTC: Lookup Hit (10000000 items)
-[UTHASH Hit]    Time: 1.8350s (Found: 10000000)
-[ZMAP Hit]      Time: 0.7845s (Found: 10000000)
-   SUMMARY: ZMAP was 2.34x FASTER than UTHASH.
+[UTHASH Hit]    Time: 1.6380s (Found: 10000000)
+[ZMAP Hit]      Time: 0.7230s (Found: 10000000)
+   SUMMARY: ZMAP was 2.27x FASTER than UTHASH.
 
 => Benchmark BTC: Lookup Miss (10000000 items)
-[UTHASH Miss]   Time: 2.5011s (Found: 0)
-[ZMAP Miss]     Time: 0.6556s (Found: 0)
-   SUMMARY: ZMAP was 3.82x FASTER than UTHASH.
+[UTHASH Miss]   Time: 2.2162s (Found: 0)
+[ZMAP Miss]     Time: 0.6207s (Found: 0)
+   SUMMARY: ZMAP was 3.57x FASTER than UTHASH.
 
 => Benchmark BTC: Deletion (All items)
-[UTHASH Delete] Time: 0.7193s
-[ZMAP Delete]   Time: 0.0029s
-   SUMMARY: ZMAP was 247.19x FASTER than UTHASH.
+[UTHASH Delete] Time: 0.6533s
+[ZMAP Delete]   Time: 0.0028s
+   SUMMARY: ZMAP was 231.55x FASTER than UTHASH.
